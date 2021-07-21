@@ -1,0 +1,10 @@
+version: '2'
+services:
+  fake-res:
+    build: .
+    command: npm run start
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "8989:8888"
