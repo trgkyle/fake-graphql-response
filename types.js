@@ -184,7 +184,7 @@ type BiometricCardListResponse {
 }
 
 type BiometricCardMutation {
-  create(transactionId: String!, update: Boolean, image: Float, imageBase64: String, searchFields: [String!]!, type: BiometricCardType!): BiometricCardResponse
+  create(transactionId: String!, update: Boolean, image: Upload, imageBase64: String, searchFields: [String!]!, type: BiometricCardType!): BiometricCardResponse
   update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: BiometricCardFilter!, search: SearchFilter, cardId: String, type: String, name: String, nationality: String, dob: Date, gender: String, dateIssued: Date, dateExpired: Date, issuedBy: String, address: String, hometown: String, customerId: String, metadata: [KeyValuePairInput]): BiometricCardListResponse
   delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: BiometricCardFilter!, search: SearchFilter): CountResponse
 }
@@ -207,7 +207,7 @@ enum BiometricCardType {
 }
 
 type BiometricFaceImageMutation {
-  create(transactionId: String, customerId: String, image: [Float!], imageBase64: [String!], searchFaceOptions: [FaceSearchOption!], method: String): FaceResponseBatch
+  create(transactionId: String, customerId: String, image: [Upload!], imageBase64: [String!], searchFaceOptions: [FaceSearchOption!], method: String): FaceResponseBatch
   update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: FaceFilter!, search: SearchFilter, embedding: Boolean, customerId: String, method: String, isRegistered: Boolean, metadata: [KeyValuePairInput]): FaceListResponse
   delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: FaceFilter!, search: SearchFilter): CountResponse
 }
@@ -509,7 +509,7 @@ type FaceResponseBatch {
 }
 
 input FaceSearch {
-  image: Float
+  image: Upload
   imageBase64: String
   embeddings: [Float]
   options: FaceSearchOption
@@ -579,7 +579,7 @@ type FileListResponse {
 }
 
 type FileMutation {
-  singleFloat(file: Float!): FileResponse
+  singleUpload(file: Upload!): FileResponse
   delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: FileFilter!, search: SearchFilter): CountResponse
 }
 
@@ -1146,6 +1146,8 @@ type Translation {
 
 scalar UUID
 
+scalar Upload
+
 type User {
   id: String!
   phone: String
@@ -1237,13 +1239,13 @@ type UserMinimal {
 type UserMutation {
   create(email: String, name: String, phone: String, address: String, gender: String, memberId: String, passwordRaw: String!, providerKey: String, groups: [String]!, positionId: String, deptId: String, mustChangePassword: Boolean, sendWelcomeEmail: Boolean, metadata: [KeyValuePairInput]): UserResponse
   update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: UserFilter!, search: SearchFilter, email: String, name: String, newPassword: String, dob: Date, groups: [String], address: String, gender: String, timezone: String, dateFormat: String, appearance: String, positionId: String, deptId: String, memberId: String, metadata: [KeyValuePairInput]): UserListResponse
-  FloatAvatarImage(id: String!, image: Float, imageBase64: String): UserResponse
+  uploadAvatarImage(id: String!, image: Upload, imageBase64: String): UserResponse
   delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: UserFilter!, search: SearchFilter): CountResponse
   verify(id: String!): DefaultResponse
   activate(id: String!): DefaultResponse
   deactivate(id: String!): DefaultResponse
   resetPassword(id: String!): DefaultResponse
-  updateProfile(name: String, address: String!, gender: String!, timezone: String!, dateFormat: String!, appearance: String!, positionId: String, deptId: String, avatarImage: Float, avatarImageBase64: String): UserTokenResponse
+  updateProfile(name: String, address: String!, gender: String!, timezone: String!, dateFormat: String!, appearance: String!, positionId: String, deptId: String, avatarImage: Upload, avatarImageBase64: String): UserTokenResponse
   changePassword(current: String!, new: String!): UserTokenResponse
 }
 
@@ -1288,7 +1290,8 @@ type UserResponse {
 type UserTokenResponse {
   responseResult: ResponseStatus!
   jwt: String
-}`;
+}
+`;
 
 module.exports = {
   typeDefs

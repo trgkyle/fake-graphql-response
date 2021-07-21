@@ -11,8 +11,7 @@ const mocks = {
       },
     isSystem: () => true,
     Upload: () => 'Upload'
-  };
-
+};
   
 const server = new ApolloServer({ typeDefs, mocks });
 
