@@ -10,7 +10,16 @@ const mocks = {
         return new Date();
       },
     isSystem: () => true,
-    Upload: () => 'Upload'
+    Upload: () => 'Upload',
+    Group: () => {
+      return {
+      id: "123",
+      name: "123",
+      isSystem: true,
+      permissions: ["manage:system"]
+      }
+    }
+    
 };
   
 const server = new ApolloServer({ typeDefs, mocks });
