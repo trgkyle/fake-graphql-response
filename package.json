@@ -1,0 +1,25 @@
+{
+  "name": "fake-graphql-response",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_ENV=development node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trgkyle/fake-graphql-response.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/trgkyle/fake-graphql-response/issues"
+  },
+  "homepage": "https://github.com/trgkyle/fake-graphql-response#readme",
+  "dependencies": {
+    "apollo-server": "^3.0.2",
+    "graphql": "^15.5.1",
+    "graphql-tools": "^7.0.5"
+  }
+}

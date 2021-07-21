@@ -1,0 +1,1263 @@
+type AnalyticGroup {
+  vip: [MemberTime]
+  blacklist: [BlacklistTime]
+  guest: [MemberTime]
+}
+
+type AnalyticQuery {
+  analyticByDate(type: Int): AnalyticCount
+  analyticByHour(date: Date, action: String): [AnalyticCount]
+  analyticByGroup(date: Date): AnalyticGroup
+}
+
+type ApiUrl {
+  rootAPI: String
+  socketStreamUrl: String
+  imagePrefix: String
+  SSL: String
+}
+
+type AuthenticationApiKey {
+  id: String!
+  name: String!
+  keyShort: String!
+  expiration: Date!
+  createdAt: Date!
+  updatedAt: Date!
+  isRevoked: Boolean!
+}
+
+input AuthenticationConfigInput {
+  audience: String!
+  tokenExpiration: String!
+  tokenRenewal: String!
+}
+
+type AuthenticationCreateApiKeyResponse {
+  responseResult: ResponseStatus
+  key: String
+}
+
+type AuthenticationLoginResponse {
+  responseResult: ResponseStatus
+  jwt: String
+  mustChangePwd: Boolean
+  continuationToken: String
+}
+
+type AuthenticationMutation {
+  createApiKey(name: String!, expiration: String!, fullAccess: Boolean!, group: String): AuthenticationCreateApiKeyResponse
+  login(username: String!, password: String!, strategy: String!): AuthenticationLoginResponse
+  loginChangePassword(continuationToken: String!, newPassword: String!): AuthenticationLoginResponse
+  register(email: String!, password: String!, name: String!): AuthenticationRegisterResponse
+  revokeApiKey(id: String!): DefaultResponse
+  setApiState(enabled: Boolean!): DefaultResponse
+  updateStrategies(strategies: [AuthenticationStrategyInput]!, config: AuthenticationConfigInput): DefaultResponse
+  regenerateCertificates: DefaultResponse
+}
+
+type AuthenticationQuery {
+  apiKeys: [AuthenticationApiKey]
+  apiState: Boolean!
+  strategies(isEnabled: Boolean): [AuthenticationStrategy]
+}
+
+type AuthenticationRegisterResponse {
+  responseResult: ResponseStatus
+  jwt: String
+}
+
+type AuthenticationStrategy {
+  isEnabled: Boolean!
+  key: String!
+  props: [KeyValuePair]
+  title: String!
+  description: String
+  isAvailable: Boolean
+  useForm: Boolean!
+  logo: String
+  color: String
+  website: String
+  icon: String
+  config: [KeyValuePair]
+  selfRegistration: Boolean!
+  domainWhitelist: [String]!
+  autoEnrollGroups: [Int]!
+}
+
+input AuthenticationStrategyInput {
+  isEnabled: Boolean!
+  key: String!
+  config: [KeyValuePairInput]
+  selfRegistration: Boolean!
+  domainWhitelist: [String]!
+  autoEnrollGroups: [Int]!
+}
+
+type BiometricCard {
+  id: String
+  frontCardUrl: String
+  backCardUrl: String
+  frontCardCroppedUrl: String
+  backCardCroppedUrl: String
+  resultFront: String
+  resultBack: String
+  result: String
+  metadata: [KeyValuePair]
+  createdAt: Date
+  updatedAt: Date
+  cardId: String
+  type: String
+  name: String
+  nationality: String
+  dob: Date
+  gender: String
+  dateIssued: Date
+  dateExpired: Date
+  issuedBy: String
+  address: String
+  hometown: String
+  customer: Customer
+}
+
+input BiometricCardFilter {
+  id: String
+  frontCardUrl: String
+  backCardUrl: String
+  frontCardCroppedUrl: String
+  backCardCroppedUrl: String
+  resultFront: String
+  resultBack: String
+  result: String
+  createdAt: DateFilter
+  updatedAt: DateFilter
+  cardId: String
+  type: String
+  name: String
+  nationality: String
+  dob: DateFilter
+  gender: String
+  dateIssued: DateFilter
+  dateExpired: DateFilter
+  issuedBy: String
+  address: String
+  hometown: String
+  customer: CustomerFilter
+  metadata: String
+}
+
+type BiometricCardListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  biometricCards: [BiometricCard]
+}
+
+type BiometricCardMutation {
+  create(transactionId: String!, update: Boolean, image: Upload, imageBase64: String, searchFields: [String!]!, type: BiometricCardType!): BiometricCardResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: BiometricCardFilter!, search: SearchFilter, cardId: String, type: String, name: String, nationality: String, dob: Date, gender: String, dateIssued: Date, dateExpired: Date, issuedBy: String, address: String, hometown: String, customerId: String, metadata: [KeyValuePairInput]): BiometricCardListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: BiometricCardFilter!, search: SearchFilter): CountResponse
+}
+
+type BiometricCardQuery {
+  list(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: BiometricCardFilter!, search: SearchFilter): BiometricCardListResponse
+}
+
+type BiometricCardResponse {
+  responseResult: ResponseStatus!
+  biometricCard: BiometricCard
+  transaction: Transaction
+  matchedCustomer: Customer
+  matchedTransaction: [Transaction]
+}
+
+enum BiometricCardType {
+  front
+  back
+}
+
+type BiometricFaceImageMutation {
+  create(transactionId: String, customerId: String, image: [Upload!], imageBase64: [String!], searchFaceOptions: [FaceSearchOption!], method: String): FaceResponseBatch
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: FaceFilter!, search: SearchFilter, embedding: Boolean, customerId: String, method: String, isRegistered: Boolean, metadata: [KeyValuePairInput]): FaceListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: FaceFilter!, search: SearchFilter): CountResponse
+}
+
+type BiometricFaceImageQuery {
+  list(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: FaceFilter!, search: SearchFilter): FaceListResponse
+}
+
+type BlacklistTime {
+  customer: Customer
+  appearTime: [Date]
+}
+
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+type Client {
+  id: String
+  commit: String
+  branch: String
+  ipAddress: String
+  version: String
+  platform: String
+  operatingSystem: String
+  ssl: Boolean
+  ramTotal: Boolean
+  metadata: [KeyValuePair]
+}
+
+input ClientFilter {
+  commit: String
+  branch: String
+  ipAddress: String
+  platform: String
+}
+
+type ClientMutation {
+  create(commit: String, branch: String, ipAddress: String, version: String, platform: String, operatingSystem: String, ssl: Boolean, ramTotal: Boolean): ClientResponse
+  update(id: String!, commit: String, branch: String, ipAddress: String, version: String, platform: String, operatingSystem: String, ssl: Boolean, ramTotal: Boolean): DefaultResponse
+  delete(id: String!): DefaultResponse
+}
+
+type ClientQuery {
+  list(orderBy: String, filter: ClientFilter!): [Client]
+}
+
+type ClientResponse {
+  responseResult: ResponseStatus!
+  client: Client
+}
+
+type Config {
+  name: String
+  type: String
+  defaultValue: String
+  value: String
+  description: String
+  group: String
+  accessGroup: String
+}
+
+type CountResponse {
+  count: Int
+  responseResult: ResponseStatus
+}
+
+type Customer {
+  id: String
+  memberId: String
+  gender: String
+  email: String
+  name: String
+  phone: String
+  address: String
+  cardId: String
+  dob: Date
+  nationality: String
+  createdAt: Date
+  updatedAt: Date
+  position: Position
+  department: Department
+  groups: [Group]
+  faces: [Face]
+  metadata: [KeyValuePair]
+}
+
+input CustomerFilter {
+  id: String
+  memberId: String
+  gender: String
+  email: String
+  name: String
+  phone: String
+  address: String
+  cardId: String
+  dob: DateFilter
+  nationality: String
+  createdAt: DateFilter
+  updatedAt: DateFilter
+  organization: OrganizationFilter
+  position: PositionFilter
+  department: DepartmentFilter
+  group: GroupFilter
+  face: FaceFilter
+  transaction: TransactionFilter
+  metadata: String
+}
+
+type CustomerListResponse {
+  path: String
+  responseResult: ResponseStatus!
+  count: Int
+  customers: [Customer]
+  zipFile: File
+}
+
+type CustomerMinimal {
+  id: String
+  memberId: String
+  gender: String
+  email: String
+  name: String
+  phone: String
+  address: String
+  cardId: String
+  dob: Date
+  nationality: String
+  positionName: String
+  departmentName: String
+  groups: [Group]
+  metadata: [KeyValuePair]
+}
+
+type CustomerMutation {
+  create(memberId: String, gender: String, email: String, name: String, phone: String, address: String, cardId: String, dob: Date, nationality: String, positionId: String, departmentId: String, groupName: [String], metadata: [KeyValuePairInput]): CustomerResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: CustomerFilter!, search: SearchFilter, memberId: String, gender: String, email: String, name: String, phone: String, address: String, cardId: String, dob: Date, nationality: String, positionId: String, departmentId: String, metadata: [KeyValuePairInput]): CustomerListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: CustomerFilter!, search: SearchFilter): CountResponse
+}
+
+type CustomerQuery {
+  list(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: CustomerFilter!, search: SearchFilter, exportZip: Boolean): CustomerListResponse
+}
+
+type CustomerResponse {
+  responseResult: ResponseStatus!
+  customer: Customer
+}
+
+scalar Date
+
+input DateFilter {
+  from: Date
+  to: Date
+}
+
+"""Generic Mutation Response"""
+type DefaultResponse {
+  responseResult: ResponseStatus
+}
+
+type Department {
+  id: String
+  ssoId: String
+  code: String
+  name: String
+  shortName: String
+  status: String
+  startDate: Date
+  endDate: Date
+}
+
+input DepartmentFilter {
+  id: String
+  ssoId: String
+  code: String
+  name: String
+  shortName: String
+  status: String
+  startDate: DateFilter
+  endDate: DateFilter
+}
+
+type DepartmentListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  departments: [Department]
+}
+
+type DepartmentMutation {
+  create(ssoId: String, code: String, name: String, shortName: String, status: String, startDate: Date, endDate: Date): DepartmentResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: DepartmentFilter!, search: SearchFilter, ssoId: String, code: String, name: String, shortName: String, status: String, startDate: Date, endDate: Date): DepartmentListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: DepartmentFilter!, search: SearchFilter): CountResponse
+}
+
+type DepartmentQuery {
+  list(offset: Int, limit: Int, orderBy: String, desc: Boolean, filter: DepartmentFilter!, search: SearchFilter): DepartmentListResponse
+}
+
+type DepartmentResponse {
+  responseResult: ResponseStatus!
+  department: Department
+}
+
+type Device {
+  id: String
+  branch: String
+  name: String
+  configInfo: String
+  status: Boolean
+  lastPing: Date
+}
+
+input DeviceFilter {
+  id: String
+  branch: String
+  name: String
+  configInfo: String
+  status: Boolean
+  lastPing: DateFilter
+}
+
+type DeviceListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  devices: [Device]
+}
+
+type DeviceMutation {
+  create(id: String, branch: String, name: String, configInfo: String, status: Boolean, rootAPI: String!): DeviceResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: DeviceFilter!, search: SearchFilter, branch: String, name: String, configInfo: String, status: Boolean): DeviceListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: DeviceFilter!, search: SearchFilter): CountResponse
+  activate(id: String!): DeviceResponse
+  deactivate(id: String!): DeviceResponse
+  ping(id: String!): DeviceResponse
+}
+
+type DeviceQuery {
+  list(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: DeviceFilter!, search: SearchFilter): DeviceListResponse
+  getAllBranchs: [String]
+}
+
+type DeviceResponse {
+  responseResult: ResponseStatus!
+  device: Device
+  imagePrefix: String
+  rootAPI: String
+  deviceUrl: String
+}
+
+type Face {
+  id: String
+  imageUrl: String
+  croppedUrl: String
+  embedding: [Float]
+  isRegistered: Boolean
+  headPose: String
+  metadata: [KeyValuePair]
+  detectionResult: String
+  createdAt: Date
+  updatedAt: Date
+  method: String
+  customer: Customer
+}
+
+input FaceFilter {
+  id: String
+  imageUrl: String
+  croppedUrl: String
+  isRegistered: Boolean
+  headPose: String
+  detectionResult: String
+  createdAt: DateFilter
+  updatedAt: DateFilter
+  method: String
+  customer: CustomerFilter
+  face: FaceSearch
+  metadata: String
+}
+
+type FaceListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  faces: [Face]
+}
+
+type FaceResponse {
+  responseResult: ResponseStatus!
+  face: Face
+  matchedCustomer: Customer
+  matchedTransaction: [Transaction]
+  transaction: Transaction
+}
+
+type FaceResponseBatch {
+  responseResult: ResponseStatus!
+  faceResponse: [FaceResponse]
+}
+
+input FaceSearch {
+  image: Upload
+  imageBase64: String
+  embeddings: [Float]
+  options: FaceSearchOption
+  searchType: FaceSearchType!
+}
+
+input FaceSearchOption {
+  bbox: [Int]
+  landmarks: [[Int]]
+  limit: Int
+  onlyFace: Boolean
+  returnAttributes: Boolean
+  threshold: Float
+  exclude: String
+  accurateLandmark: String
+  checkRotate: Boolean
+  targetSize: Int
+}
+
+enum FaceSearchType {
+  searchOneEmbeddings
+  searchFaceAligned
+  searchFace
+}
+
+enum FaceUpdateType {
+  embedding
+  image
+}
+
+type File {
+  id: String!
+  mimetype: String!
+  filename: String!
+  path: String!
+  createdAt: Date!
+  size: Float!
+  faceCount: Int!
+  memberCount: Int!
+  totalMember: Int
+  user: UserFile
+  customerIdList: [String]
+  faceIdList: [String]
+  errorLogs: [String]
+}
+
+input FileFilter {
+  id: String
+  mimetype: String
+  filename: String
+  path: String
+  createdAt: DateFilter
+  size: FloatFilter
+  faceCount: IntFilter
+  memberCount: IntFilter
+  totalMember: IntFilter
+  user: UserFilter
+  customerIdList: String
+  faceIdList: String
+  errorLogs: String
+}
+
+type FileListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  files: [File]
+}
+
+type FileMutation {
+  singleUpload(file: Upload!): FileResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: FileFilter!, search: SearchFilter): CountResponse
+}
+
+type FileProcess {
+  id: String!
+  mimetype: String!
+  filename: String!
+  path: String!
+  createdAt: Date!
+  size: Float!
+  faceCount: Int!
+  memberCount: Int!
+  user: UserFile!
+  totalMember: Int
+  done: Boolean!
+  memberDone: Int!
+  orgId: String!
+  errorLogs: [String]
+}
+
+type FileQuery {
+  list(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: FileFilter!, search: SearchFilter): FileListResponse
+}
+
+type FileResponse {
+  responseResult: ResponseStatus!
+}
+
+input FloatFilter {
+  from: Float
+  to: Float
+}
+
+type Group {
+  id: String!
+  name: String!
+  isSystem: Boolean!
+  permissions: [String]!
+  users: [UserMinimal]
+  customers: [CustomerMinimal]
+  presets: [PresetMinimal]
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+input GroupFilter {
+  id: String
+  name: String
+  isSystem: Boolean
+  createdAt: DateFilter
+  updatedAt: DateFilter
+  customer: CustomerFilter
+  user: UserFilter
+  preset: PresetFilter
+  permissions: String
+}
+
+type GroupListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  groups: [Group]
+}
+
+type GroupMinimal {
+  id: String!
+  name: String!
+  permissions: [String]!
+  isSystem: Boolean!
+  userCount: Int
+  customerCount: Int
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+type GroupMutation {
+  create(name: String!): GroupResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: GroupFilter!, search: SearchFilter, name: String, permissions: [String]): GroupListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: GroupFilter!, search: SearchFilter): CountResponse
+  assignUser(groupId: String!, userId: String!): DefaultResponse
+  unassignUser(groupId: String!, userId: String!): DefaultResponse
+  assignCustomer(groupId: String!, customerId: String!): DefaultResponse
+  unassignCustomer(groupId: String!, customerId: String!): DefaultResponse
+  assignPreset(groupId: String!, presetId: Int!): DefaultResponse
+  unassignPreset(groupId: String!, presetId: Int!): DefaultResponse
+}
+
+type GroupQuery {
+  list(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: GroupFilter!, search: SearchFilter): GroupListResponse
+  getPermissions: [String]
+}
+
+type GroupResponse {
+  responseResult: ResponseStatus!
+  group: Group
+}
+
+input IntFilter {
+  from: Int
+  to: Int
+}
+
+"""Generic Key Value Pair"""
+type KeyValuePair {
+  key: String!
+  value: String!
+}
+
+"""General Key Value Pair Input"""
+input KeyValuePairInput {
+  key: String!
+  value: String!
+}
+
+type LocalizationConfig {
+  locale: String!
+  autoUpdate: Boolean!
+  namespacing: Boolean!
+  namespaces: [String]!
+}
+
+type LocalizationLocale {
+  availability: Int!
+  code: String!
+  createdAt: Date!
+  installDate: Date
+  isInstalled: Boolean!
+  isRTL: Boolean!
+  name: String!
+  nativeName: String!
+  updatedAt: Date!
+}
+
+type LocalizationMutation {
+  downloadLocale(locale: String!): DefaultResponse
+  updateLocale(locale: String!, autoUpdate: Boolean!, namespacing: Boolean!, namespaces: [String]!): DefaultResponse
+}
+
+type LocalizationQuery {
+  locales: [LocalizationLocale]
+  config: LocalizationConfig
+  translations(locale: String!, namespace: String!): [Translation]
+}
+
+type MemberTime {
+  customer: Customer
+  checkinTime: Date
+  checkoutTime: Date
+}
+
+type Monitor {
+  id: Int!
+  name: String!
+  details: [KeyValuePair]!
+  type: String!
+  ext: String!
+  fps: Int!
+  width: Int!
+  doorOpenUrl: [String]
+  skipFaceDiagonal: Float
+  action: String
+  height: Int!
+  isActive: Boolean!
+  url: String
+  presets: [PresetMinimal]!
+}
+
+input MonitorFilter {
+  id: IntFilter
+  name: String
+  type: String
+  ext: String
+  fps: IntFilter
+  width: IntFilter
+  skipFaceDiagonal: FloatFilter
+  action: String
+  height: IntFilter
+  isActive: Boolean
+  url: String
+  preset: PresetFilter
+  doorOpenUrl: String
+  details: String
+}
+
+type MonitorListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  monitors: [Monitor]
+}
+
+type MonitorMinimal {
+  id: Int
+  name: String
+}
+
+type MonitorMutation {
+  create(name: String!, details: [KeyValuePairInput]!, type: String, ext: String, fps: Int, mode: String, width: Int, doorOpenUrl: [String], skipFaceDiagonal: Float, action: String, height: Int, isActive: Boolean!, url: String): MonitorResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: MonitorFilter!, search: SearchFilter, name: String, type: String, ext: String, fps: Int, mode: String, action: String, width: Int, doorOpenUrl: [String], skipFaceDiagonal: Float, height: Int, url: String, details: [KeyValuePairInput]): MonitorListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: MonitorFilter!, search: SearchFilter): CountResponse
+  activate(id: Int!): DefaultResponse
+  deactivate(id: Int!): DefaultResponse
+  openDoor(id: Int!): DefaultResponse
+  saveOnvifData(ke: String, id: String): String
+  sendOnvifMethod(id: String, action: String, service: String, options: String): String
+  reboot(id: String, ke: String): DefaultResponse
+}
+
+type MonitorQuery {
+  list(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: MonitorFilter!, search: SearchFilter): MonitorListResponse
+  getOnvifData(ke: String, id: String): String
+  getWebcamList: [String]
+}
+
+type MonitorResponse {
+  responseResult: ResponseStatus!
+  monitor: Monitor
+}
+
+"""Mutations (Create, Update, Delete)"""
+type Mutation {
+  authentication: AuthenticationMutation
+  biometricCards: BiometricCardMutation
+  biometricFaceImages: BiometricFaceImageMutation
+  clients: ClientMutation
+  customers: CustomerMutation
+  departments: DepartmentMutation
+  devices: DeviceMutation
+  files: FileMutation
+  groups: GroupMutation
+  localization: LocalizationMutation
+  monitors: MonitorMutation
+  organizations: OrganizationMutation
+  positions: PositionMutation
+  presets: PresetMutation
+  system: SystemMutation
+  transactions: TransactionMutation
+  users: UserMutation
+}
+
+type Organization {
+  id: String!
+  avatarUrl: String
+  name: String
+  ssoId: String
+  code: String
+  status: String
+  description: String
+  parentId: String
+  address: String
+  startDate: Date
+  endDate: Date
+  userCount: Int
+  customerCount: Int
+}
+
+input OrganizationFilter {
+  id: String
+  avatarUrl: String
+  name: String
+  ssoId: String
+  code: String
+  status: String
+  description: String
+  parentId: String
+  address: String
+  startDate: DateFilter
+  endDate: DateFilter
+}
+
+type OrganizationListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  organizations: [Organization]
+}
+
+type OrganizationMutation {
+  create(name: String!, avatarUrl: String, adminId: String!, ssoId: String, code: String, status: String, description: String, parentId: String, address: String, startDate: Date, endDate: Date): OrganizationResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: OrganizationFilter!, search: SearchFilter, name: String, avatarUrl: String, ssoId: String, code: String, status: String, description: String, parentId: String, address: String, startDate: Date, endDate: Date): OrganizationListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: OrganizationFilter!, search: SearchFilter): CountResponse
+  assignUser(userId: String!): OrganizationResponse
+  unassignUser(userId: String!): OrganizationResponse
+  assignCustomer(customerId: String!): OrganizationResponse
+  unassignCustomer(customerId: String!): OrganizationResponse
+  activate(id: String!): UserTokenResponse
+}
+
+type OrganizationQuery {
+  list(offset: Int, limit: Int, orderBy: String, desc: Boolean, filter: OrganizationFilter!, search: SearchFilter): OrganizationListResponse
+}
+
+type OrganizationResponse {
+  responseResult: ResponseStatus!
+  organization: Organization
+}
+
+type Position {
+  id: String
+  ssoId: String
+  code: String
+  name: String
+  description: String
+  status: Int
+  createDate: Date
+  isManager: Boolean
+}
+
+input PositionFilter {
+  id: String
+  ssoId: String
+  code: String
+  name: String
+  description: String
+  status: IntFilter
+  createDate: DateFilter
+  isManager: Boolean
+}
+
+type PositionListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  positions: [Position]
+}
+
+type PositionMutation {
+  create(ssoId: String, code: String, name: String, description: String, status: Int, createDate: Date, isManager: Boolean): PositionResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: PositionFilter!, search: SearchFilter, ssoId: String, code: String, name: String, description: String, status: Int, createDate: Date, isManager: Boolean): PositionListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: PositionFilter!, search: SearchFilter): CountResponse
+}
+
+type PositionQuery {
+  list(offset: Int, limit: Int, orderBy: String, desc: Boolean, filter: PositionFilter!, search: SearchFilter): PositionListResponse
+}
+
+type PositionResponse {
+  responseResult: ResponseStatus!
+  position: Position
+}
+
+type Preset {
+  id: Int!
+  name: String!
+  details: [KeyValuePair]!
+  monitors: [Monitor]
+  groups: [Group]
+}
+
+input PresetFilter {
+  id: String
+  name: String
+  monitor: MonitorFilter
+  group: GroupFilter
+  details: String
+}
+
+type PresetListResponse {
+  responseResult: ResponseStatus!
+  count: Int
+  presets: [Preset]
+}
+
+type PresetMinimal {
+  id: Int!
+  name: String!
+  details: [KeyValuePair]!
+  monitorCount: Int
+  groupCount: Int
+}
+
+type PresetMutation {
+  create(name: String!, details: [KeyValuePairInput]!): PresetResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: PresetFilter!, search: SearchFilter, name: String, details: [KeyValuePairInput]): PresetListResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: PresetFilter!, search: SearchFilter): CountResponse
+  assignMonitor(presetId: Int!, monitorId: [Int]!): DefaultResponse
+  unassignMonitor(presetId: Int!, monitorId: Int!): DefaultResponse
+}
+
+type PresetQuery {
+  list(offset: Int, limit: Int, orderBy: String, desc: Boolean, filter: PresetFilter!, search: SearchFilter): PresetListResponse
+}
+
+type PresetResponse {
+  responseResult: ResponseStatus!
+  preset: Preset
+}
+
+"""Query (Read)"""
+type Query {
+  analytics: AnalyticQuery
+  authentication: AuthenticationQuery
+  biometricCards: BiometricCardQuery
+  biometricFaceImages: BiometricFaceImageQuery
+  clients: ClientQuery
+  customers: CustomerQuery
+  departments: DepartmentQuery
+  devices: DeviceQuery
+  files: FileQuery
+  groups: GroupQuery
+  localization: LocalizationQuery
+  monitors: MonitorQuery
+  organizations: OrganizationQuery
+  positions: PositionQuery
+  presets: PresetQuery
+  system: SystemQuery
+  transactions: TransactionQuery
+  users: UserQuery
+}
+
+"""Mutation Status"""
+type ResponseStatus {
+  succeeded: Boolean!
+  errorCode: Int!
+  slug: String!
+  message: String
+}
+
+input SearchFilter {
+  query: String!
+  fields: [String]!
+}
+
+"""Subscriptions (Push, Real-time)"""
+type Subscription {
+  deviceRegisteredSuccess: Device
+  fileLogTrack: FileProcess
+  transactionLiveTrail: Transaction
+}
+
+type SystemFlag {
+  key: String!
+  value: Boolean!
+}
+
+input SystemFlagInput {
+  key: String!
+  value: Boolean!
+}
+
+enum SystemImportUsersGroupMode {
+  MULTI
+  SINGLE
+  NONE
+}
+
+type SystemImportUsersResponse {
+  responseResult: ResponseStatus
+  usersCount: Int
+  groupsCount: Int
+  failed: [SystemImportUsersResponseFailed]
+}
+
+type SystemImportUsersResponseFailed {
+  provider: String
+  email: String
+  error: String
+}
+
+type SystemInfo {
+  configFile: String
+  cpuCores: Int
+  currentVersion: String
+  dbHost: String
+  dbType: String
+  dbVersion: String
+  groupsTotal: Int
+  hostname: String
+  httpPort: Int
+  httpRedirection: Boolean
+  httpsPort: Int
+  latestVersion: String
+  latestVersionReleaseDate: Date
+  nodeVersion: String
+  operatingSystem: String
+  platform: String
+  ramTotal: String
+  setup: Boolean
+  sslDomain: String
+  sslExpirationDate: Date
+  sslProvider: String
+  sslStatus: String
+  sslSubscriberEmail: String
+  upgradeCapable: Boolean
+  usersTotal: Int
+  workingDirectory: String
+  apiUrl: ApiUrl
+}
+
+type SystemMutation {
+  updateFlags(flags: [SystemFlagInput]!): DefaultResponse
+  setConfigs(configs: [KeyValuePairInput]!): DefaultResponse
+  renewHTTPSCertificate: DefaultResponse
+}
+
+type SystemQuery {
+  flags: [SystemFlag]
+  configs(groups: [String], accessGroup: String): [Config]
+  info: SystemInfo
+}
+
+type Transaction {
+  id: String
+  status: String
+  metadata: [KeyValuePair]
+  action: String
+  onTime: Boolean
+  recognitionResult: String
+  createdAt: Date
+  updatedAt: Date
+  orgId: String
+  customer: CustomerMinimal
+  monitor: MonitorMinimal
+  device: Device
+  face: Face
+  card: BiometricCard
+  client: Client
+}
+
+input TransactionFilter {
+  id: String
+  status: String
+  action: String
+  onTime: Boolean
+  recognitionResult: String
+  createdAt: DateFilter
+  updatedAt: DateFilter
+  orgId: String
+  customer: CustomerFilter
+  monitor: MonitorFilter
+  device: DeviceFilter
+  face: FaceFilter
+  card: BiometricCardFilter
+  group: GroupFilter
+  """client: Client"""
+  metadata: String
+}
+
+type TransactionListResponse {
+  responseResult: ResponseStatus!
+  transactions: [Transaction]
+  id: String
+  count: Int
+}
+
+type TransactionMutation {
+  create(status: String, action: String, customerId: String, monitorId: String, deviceId: String, faceId: String, cardId: String, clientId: String, createdAt: Date, metadata: [KeyValuePairInput]): TransactionResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: TransactionFilter!, search: SearchFilter): CountResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: TransactionFilter!, search: SearchFilter, status: String, action: String, onTime: Boolean, customerId: String, monitorId: String, deviceId: String, faceId: String, cardId: String, clientId: String, metadata: [KeyValuePairInput]): TransactionListResponse
+}
+
+type TransactionQuery {
+  list(offset: Int, limit: Int, desc: Boolean, filter: TransactionFilter!, orderBy: String, exportExcel: Boolean, search: SearchFilter): TransactionListResponse
+}
+
+type TransactionResponse {
+  responseResult: ResponseStatus!
+  output: String
+  matchedCustomer: Customer
+  transaction: Transaction
+  searchedTransaction: [Transaction]
+}
+
+type Translation {
+  key: String!
+  value: String!
+}
+
+scalar UUID
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type User {
+  id: String!
+  phone: String
+  address: String
+  memberId: String
+  name: String
+  email: String
+  dob: Date
+  avatarUrl: String
+  providerKey: String
+  providerId: String
+  isSystem: Boolean!
+  isActive: Boolean!
+  isVerified: Boolean!
+  position: Position
+  gender: String
+  department: Department
+  timezone: String!
+  dateFormat: String
+  appearance: String
+  createdAt: Date!
+  updatedAt: Date!
+  lastLoginAt: Date
+  groups: [Group]!
+  metadata: [KeyValuePair]
+}
+
+type UserFile {
+  id: String!
+  name: String!
+}
+
+input UserFilter {
+  id: String
+  phone: String
+  address: String
+  memberId: String
+  name: String
+  email: String
+  dob: DateFilter
+  avatarUrl: String
+  providerKey: String
+  providerId: String
+  isSystem: Boolean
+  isActive: Boolean
+  isVerified: Boolean
+  gender: String
+  timezone: String
+  dateFormat: String
+  appearance: String
+  createdAt: DateFilter
+  updatedAt: DateFilter
+  lastLoginAt: DateFilter
+  organization: OrganizationFilter
+  position: PositionFilter
+  department: DepartmentFilter
+  group: GroupFilter
+  metadata: String
+}
+
+type UserLastLogin {
+  id: String!
+  name: String
+  lastLoginAt: Date!
+}
+
+type UserListResponse {
+  responseResult: ResponseStatus!
+  users: [User]
+  count: Int
+}
+
+type UserMinimal {
+  id: String!
+  memberId: String
+  name: String
+  email: String
+  avatarUrl: String
+  providerKey: String
+  isSystem: Boolean!
+  isActive: Boolean!
+  createdAt: Date!
+  lastLoginAt: Date
+  positionName: String
+  departmentName: String
+  metadata: [KeyValuePair]
+}
+
+type UserMutation {
+  create(email: String, name: String, phone: String, address: String, gender: String, memberId: String, passwordRaw: String!, providerKey: String, groups: [String]!, positionId: String, deptId: String, mustChangePassword: Boolean, sendWelcomeEmail: Boolean, metadata: [KeyValuePairInput]): UserResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: UserFilter!, search: SearchFilter, email: String, name: String, newPassword: String, dob: Date, groups: [String], address: String, gender: String, timezone: String, dateFormat: String, appearance: String, positionId: String, deptId: String, memberId: String, metadata: [KeyValuePairInput]): UserListResponse
+  uploadAvatarImage(id: String!, image: Upload, imageBase64: String): UserResponse
+  delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: UserFilter!, search: SearchFilter): CountResponse
+  verify(id: String!): DefaultResponse
+  activate(id: String!): DefaultResponse
+  deactivate(id: String!): DefaultResponse
+  resetPassword(id: String!): DefaultResponse
+  updateProfile(name: String, address: String!, gender: String!, timezone: String!, dateFormat: String!, appearance: String!, positionId: String, deptId: String, avatarImage: Upload, avatarImageBase64: String): UserTokenResponse
+  changePassword(current: String!, new: String!): UserTokenResponse
+}
+
+type UserProfile {
+  id: String!
+  name: String
+  email: String
+  memberId: String
+  providerKey: String
+  providerName: String
+  isSystem: Boolean!
+  avatarUrl: String
+  isVerified: Boolean!
+  address: String
+  position: Position
+  gender: String
+  timezone: String!
+  department: Department
+  dateFormat: String
+  appearance: String
+  createdAt: Date!
+  updatedAt: Date!
+  dob: Date
+  currentOrganization: Organization
+  lastLoginAt: Date
+  organizations: [Organization]
+  groups: [Group]!
+  metadata: [KeyValuePair]
+}
+
+type UserQuery {
+  list(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: UserFilter!, search: SearchFilter): UserListResponse
+  profile: UserProfile
+  lastLogins: [UserLastLogin]
+}
+
+type UserResponse {
+  responseResult: ResponseStatus!
+  user: User
+}
+
+type UserTokenResponse {
+  responseResult: ResponseStatus!
+  jwt: String
+}
