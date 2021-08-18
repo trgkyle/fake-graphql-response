@@ -1,0 +1,7 @@
+schema: https://horus-dashboard-kyle.tunnel.techainer.com/graphql
+generates:
+  ./__schema-generate__.graphql:
+    plugins:
+      - schema-ast
+    config:
+      includeDirectives: true

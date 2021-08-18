@@ -185,7 +185,7 @@ type BiometricCardListResponse {
 
 type BiometricCardMutation {
   create(transactionId: String!, update: Boolean, image: Upload, imageBase64: String, searchFields: [String!]!, type: BiometricCardType!): BiometricCardResponse
-  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: BiometricCardFilter!, search: SearchFilter, cardId: String, type: String, name: String, nationality: String, dob: Date, gender: String, dateIssued: Date, dateExpired: Date, issuedBy: String, address: String, hometown: String, customerId: String, metadata: [KeyValuePairInput]): BiometricCardListResponse
+  update(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: BiometricCardFilter!, search: SearchFilter, cardId: String, type: String, name: String, nationality: String, dob: Date, gender: String, dateIssued: Date, dateExpired: Date, issuedBy: String, address: String, hometown: String, metadata: [KeyValuePairInput]): BiometricCardListResponse
   delete(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: BiometricCardFilter!, search: SearchFilter): CountResponse
 }
 
@@ -285,6 +285,7 @@ type Customer {
   phone: String
   address: String
   cardId: String
+  card: BiometricCard
   dob: Date
   nationality: String
   createdAt: Date
@@ -351,6 +352,7 @@ type CustomerMutation {
 
 type CustomerQuery {
   list(offset: Int, limit: Int, desc: Boolean, orderBy: String, filter: CustomerFilter!, search: SearchFilter, exportZip: Boolean): CustomerListResponse
+  listNotCheckOut(from: Date, to: Date): CustomerListResponse
 }
 
 type CustomerResponse {
@@ -747,7 +749,7 @@ type Monitor {
 }
 
 input MonitorFilter {
-  id: IntFilter
+  id: Int
   name: String
   type: String
   ext: String
