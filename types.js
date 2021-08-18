@@ -1148,7 +1148,6 @@ type Translation {
 
 scalar UUID
 
-"""The `Upload` scalar type represents a file upload."""
 scalar Upload
 
 type User {
